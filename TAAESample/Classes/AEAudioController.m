@@ -241,7 +241,7 @@ static const double kMicBandpassCenterFrequency = 2000.0;
     
     // Request a 128 frame hardware duration, for minimal latency
     AVAudioSession * session = [AVAudioSession sharedInstance];
-    [session setPreferredIOBufferDuration:128.0/session.sampleRate error:NULL];
+    [session setPreferredIOBufferDuration:256.0/session.sampleRate error:NULL];
     
     // Start the session
     if ( ![self setAudioSessionCategory:error] || ![session setActive:YES error:error] ) {

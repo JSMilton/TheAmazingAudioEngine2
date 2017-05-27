@@ -271,7 +271,7 @@
 					};
 					4CDCACBB1CA25AA8008AAEF1 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = X925S83LF5;
+						DevelopmentTeam = 5C77N9YEC5;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -516,6 +516,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5C77N9YEC5;
 				INFOPLIST_FILE = TAAESample/Platform/iOS/Support/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atastypixel.TAAESample;
@@ -530,6 +531,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5C77N9YEC5;
 				INFOPLIST_FILE = TAAESample/Platform/iOS/Support/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atastypixel.TAAESample;
