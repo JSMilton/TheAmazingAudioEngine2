@@ -62,6 +62,21 @@ AESeconds AESecondsFromHostTicks(AEHostTicks ticks) {
     return ticks * __hostTicksToSeconds;
 }
 
+AESeconds AESecondsFromBeats(AEBeats beats, double tempo) {
+    return beats / 60 * tempo;
+}
+
+AEBeats AEBeatsFromHostTicks(AEHostTicks ticks, double tempo) {
+    return AESecondsFromHostTicks(ticks) * tempo / 60;
+}
+
+AEHostTicks AEHostTicksFromBeats(AEBeats beats, double tempo) {
+    if ( !__secondsToHostTicks ) AETimeInit();
+    assert(beats >= 0);
+    AESeconds seconds = AESecondsFromBeats(beats, tempo);
+    return AEHostTicksFromSeconds(seconds);
+}
+
 AudioTimeStamp AETimeStampWithHostTicks(AEHostTicks ticks) {
     if ( !ticks ) return AETimeStampNone;
     return (AudioTimeStamp) { .mFlags = kAudioTimeStampHostTimeValid, .mHostTime = ticks };

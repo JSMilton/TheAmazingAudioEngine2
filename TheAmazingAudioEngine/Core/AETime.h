@@ -33,6 +33,7 @@ extern "C" {
 
 typedef uint64_t AEHostTicks;
 typedef double AESeconds;
+typedef double AEBeats;
     
 extern const AudioTimeStamp AETimeStampNone; //!< An empty timestamp
     
@@ -66,6 +67,33 @@ AEHostTicks AEHostTicksFromSeconds(AESeconds seconds);
  * @return The time in seconds
  */
 AESeconds AESecondsFromHostTicks(AEHostTicks ticks);
+    
+/*!
+ * Convert time in beats to seconds
+ *
+ * @param beats The time in beats
+ * @param tempo The current tempo
+ * @return The time in seconds
+ */
+AESeconds AESecondsFromBeats(AEBeats beats, double tempo);
+
+/*!
+ * Convert time in host ticks to beats
+ *
+ * @param ticks The time in host ticks
+ * @param tempo The current tempo
+ * @return The time in beats
+ */
+AEBeats AEBeatsFromHostTicks(AEHostTicks ticks, double tempo);
+    
+/*!
+ * Convert time in beats to host ticks
+ *
+ * @param beats The time in beats
+ * @param tempo The current tempo
+ * @return The time in host ticks
+ */
+AEHostTicks AEHostTicksFromBeats(AEBeats beats, double tempo);
     
 /*!
  * Create an AudioTimeStamps with a host ticks value

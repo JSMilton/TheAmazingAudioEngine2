@@ -287,6 +287,7 @@
 		4CE5F4D11CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
 		4CE5F4D21CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
 		4CE5F4D31CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
+		C8FFFA761EE0441E0048E314 /* AETimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8FFFA751EE0441E0048E314 /* AETimeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -441,6 +442,7 @@
 		4CE5F4CA1CD3135800322F03 /* AECrossThreadMessagingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AECrossThreadMessagingTests.m; sourceTree = "<group>"; };
 		4CE5F4CC1CD3169C00322F03 /* AEAudioThreadEndpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AEAudioThreadEndpoint.h; sourceTree = "<group>"; };
 		4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AEAudioThreadEndpoint.m; sourceTree = "<group>"; };
+		C8FFFA751EE0441E0048E314 /* AETimeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AETimeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -549,6 +551,7 @@
 				4C3183461CE8307A0085634F /* AEDSPUtilitiesTests.m */,
 				4C9F0FBD1CB339180032903E /* AEManagedValueTests.m */,
 				2236604F1D96E34800CFA5B8 /* AENewTimePitchModuleTests.m */,
+				C8FFFA751EE0441E0048E314 /* AETimeTests.m */,
 				4CDCACAC1CA25A6E008AAEF1 /* Info.plist */,
 			);
 			path = Tests;
@@ -1131,6 +1134,7 @@
 				4C3183471CE8307A0085634F /* AEDSPUtilitiesTests.m in Sources */,
 				4CE5F4CB1CD3135800322F03 /* AECrossThreadMessagingTests.m in Sources */,
 				4C43E5B01CF14A340000DB62 /* AEAudioFileReadWriteTests.m in Sources */,
+				C8FFFA761EE0441E0048E314 /* AETimeTests.m in Sources */,
 				4C3183601CEAE6830085634F /* AEAudioBufferListUtilitiesTests.m in Sources */,
 				4C9F0FBE1CB339180032903E /* AEManagedValueTests.m in Sources */,
 				223660501D96E34800CFA5B8 /* AENewTimePitchModuleTests.m in Sources */,
