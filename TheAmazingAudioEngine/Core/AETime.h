@@ -76,6 +76,15 @@ AESeconds AESecondsFromHostTicks(AEHostTicks ticks);
  * @return The time in seconds
  */
 AESeconds AESecondsFromBeats(AEBeats beats, double tempo);
+    
+/*!
+ * Convert time in seconds to beats
+ *
+ * @param seconds The time in seconds
+ * @param tempo The current tempo
+ * @return The time in beats
+ */
+AEBeats AEBeatsFromSeconds(AESeconds seconds, double tempo);
 
 /*!
  * Convert time in host ticks to beats
