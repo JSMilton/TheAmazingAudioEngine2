@@ -63,11 +63,11 @@ AESeconds AESecondsFromHostTicks(AEHostTicks ticks) {
 }
 
 AESeconds AESecondsFromBeats(AEBeats beats, double tempo) {
-    return beats / 60 * tempo;
+    return beats * (60 / tempo);
 }
 
 AEBeats AEBeatsFromSeconds(AESeconds seconds, double tempo) {
-    return seconds * tempo / 60;
+    return seconds / (60 / tempo);
 }
 
 AEBeats AEBeatsFromHostTicks(AEHostTicks ticks, double tempo) {
