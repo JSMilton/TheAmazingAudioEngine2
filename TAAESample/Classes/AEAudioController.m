@@ -273,7 +273,7 @@ static const double kMicBandpassCenterFrequency = 2000.0;
     
 #if TARGET_OS_IPHONE
 
-    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    //[[AVAudioSession sharedInstance] setActive:NO error:NULL];
     
     if ( removeObservers ) {
         // Remove our notification handlers
@@ -507,9 +507,8 @@ static const double kMicBandpassCenterFrequency = 2000.0;
 - (BOOL)setAudioSessionCategory:(NSError **)error {
     NSError * e;
     AVAudioSession * session = [AVAudioSession sharedInstance];
-    if ( ![session setCategory:self.inputEnabled ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback
-                   withOptions:(self.inputEnabled ? AVAudioSessionCategoryOptionDefaultToSpeaker : 0)
-                                | AVAudioSessionCategoryOptionMixWithOthers
+    if ( ![session setCategory:AVAudioSessionCategoryPlayback
+                   withOptions: AVAudioSessionCategoryOptionMixWithOthers
                          error:&e] ) {
         NSLog(@"Couldn't set category: %@", e.localizedDescription);
         if ( error ) *error = e;

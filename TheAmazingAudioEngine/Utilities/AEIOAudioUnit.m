@@ -174,31 +174,31 @@ NSString * const AEIOAudioUnitDidSetupNotification = @"AEIOAudioUnitDidSetupNoti
     [self updateStreamFormat];
     
     // Register a callback to watch for stream format changes
-    AECheckOSStatus(AudioUnitAddPropertyListener(_audioUnit, kAudioUnitProperty_StreamFormat, AEIOAudioUnitStreamFormatChanged,
-                                                 (__bridge void*)self),
-                    "AudioUnitAddPropertyListener(kAudioUnitProperty_StreamFormat)");
+//    AECheckOSStatus(AudioUnitAddPropertyListener(_audioUnit, kAudioUnitProperty_StreamFormat, AEIOAudioUnitStreamFormatChanged,
+//                                                 (__bridge void*)self),
+//                    "AudioUnitAddPropertyListener(kAudioUnitProperty_StreamFormat)");
     
 #if TARGET_OS_IPHONE
     __weak typeof(self) weakSelf = self;
     
     // Watch for session interruptions
-    __block BOOL wasRunning;
-    self.sessionInterruptionObserverToken =
-    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification object:nil queue:nil
-                                                  usingBlock:^(NSNotification *notification) {
-        NSInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
-        if ( type == AVAudioSessionInterruptionTypeBegan ) {
-            wasRunning = weakSelf.running;
-            if ( wasRunning ) {
-                [weakSelf stop];
-            }
-        } else {
-            if ( wasRunning ) {
-                [weakSelf start:NULL];
-            }
-        }
-    }];
-    
+//    __block BOOL wasRunning;
+//    self.sessionInterruptionObserverToken =
+//    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification object:nil queue:nil
+//                                                  usingBlock:^(NSNotification *notification) {
+//        NSInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
+//        if ( type == AVAudioSessionInterruptionTypeBegan ) {
+//            wasRunning = weakSelf.running;
+//            if ( wasRunning ) {
+//                [weakSelf stop];
+//            }
+//        } else {
+//            if ( wasRunning ) {
+//                [weakSelf start:NULL];
+//            }
+//        }
+//    }];
+//    
     // Watch for media reset notifications
     self.mediaResetObserverToken =
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionMediaServicesWereResetNotification object:nil
@@ -214,6 +214,10 @@ NSString * const AEIOAudioUnitDidSetupNotification = @"AEIOAudioUnitDidSetupNoti
         weakSelf.outputLatency = [AVAudioSession sharedInstance].outputLatency;
         weakSelf.inputLatency = [AVAudioSession sharedInstance].inputLatency;
         weakSelf.inputGain = weakSelf.inputGain;
+        
+        if ( weakSelf.running ) {
+            [self updateStreamFormat];
+        }
     }];
     
     // Register callback to watch for Inter-App Audio connections
