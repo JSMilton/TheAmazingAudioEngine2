@@ -198,7 +198,8 @@ NSString * const AEIOAudioUnitDidSetupNotification = @"AEIOAudioUnitDidSetupNoti
 //            }
 //        }
 //    }];
-//    
+//
+    
     // Watch for media reset notifications
     self.mediaResetObserverToken =
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionMediaServicesWereResetNotification object:nil
@@ -626,6 +627,9 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
         if ( rateChanged && running ) {
             AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
             stoppedUnit = YES;
+        }
+
+        if ( rateChanged ) {
             hasChanges = YES;
         }
         
