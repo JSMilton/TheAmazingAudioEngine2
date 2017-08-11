@@ -79,6 +79,7 @@ typedef void (^AEAudioFileRecorderModuleCompletionBlock)();
  * @param time Time to begin recording, or 0 for "now"
  */
 - (void)beginRecordingAtTime:(AEHostTicks)time;
+- (void)beginRecordingAtTime:(AEHostTicks)time completionBlock:(AEAudioFileRecorderModuleCompletionBlock _Nullable )block;
 
 /*!
  * Stop recording

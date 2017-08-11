@@ -28,6 +28,7 @@
 @property (nonatomic, readwrite) int numberOfChannels;
 @property (nonatomic, readwrite) BOOL recording;
 @property (nonatomic, strong) AEMainThreadEndpoint * stopRecordingNotificationEndpoint;
+@property (nonatomic, strong) AEMainThreadEndpoint * startRecordingNotificationEndpoint;
 @end
 
 @implementation AEAudioFileRecorderModule
@@ -63,10 +64,20 @@
 }
 
 - (void)beginRecordingAtTime:(AEHostTicks)time {
+    [self beginRecordingAtTime:time completionBlock:nil];
+}
+
+- (void)beginRecordingAtTime:(AEHostTicks)time completionBlock:(AEAudioFileRecorderModuleCompletionBlock)block {
     self.recording = YES;
     _complete = NO;
     _recordedFrames = 0;
     _startTime = time ? time : AECurrentTimeInHostTicks();
+    
+    if (time) {
+        self.startRecordingNotificationEndpoint = [[AEMainThreadEndpoint alloc] initWithHandler:^(void * _Nullable data, size_t length) {
+            if ( block ) block();
+        }];
+    }
 }
 
 - (void)stopRecordingAtTime:(AEHostTicks)time completionBlock:(AEAudioFileRecorderModuleCompletionBlock)block {
@@ -122,6 +133,8 @@ static void AEAudioFileRecorderModuleProcess(__unsafe_unretained AEAudioFileReco
         pthread_mutex_unlock(&THIS->_audioFileMutex);
         return;
     }
+    
+    AEMainThreadEndpointSend(THIS->_startRecordingNotificationEndpoint, NULL, 0);
     
     THIS->_startTime = 0;
     
