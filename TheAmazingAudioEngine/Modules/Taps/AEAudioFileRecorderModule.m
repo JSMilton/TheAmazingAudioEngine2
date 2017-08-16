@@ -77,7 +77,9 @@
     _startTime = time ? time : AECurrentTimeInHostTicks();
     
     if (time) {
+        __weak typeof(self) weakSelf = self;
         self.startRecordingNotificationEndpoint = [[AEMainThreadEndpoint alloc] initWithHandler:^(void * _Nullable data, size_t length) {
+            weakSelf.startRecordingNotificationEndpoint = nil;
             if ( block ) block();
         }];
     }
@@ -137,7 +139,9 @@ static void AEAudioFileRecorderModuleProcess(__unsafe_unretained AEAudioFileReco
         return;
     }
     
-    AEMainThreadEndpointSend(THIS->_startRecordingNotificationEndpoint, NULL, 0);
+    if (THIS->_startRecordingNotificationEndpoint && THIS->_startTime != 0) {
+        AEMainThreadEndpointSend(THIS->_startRecordingNotificationEndpoint, NULL, 0);
+    }
     
     THIS->_startTime = 0;
     
