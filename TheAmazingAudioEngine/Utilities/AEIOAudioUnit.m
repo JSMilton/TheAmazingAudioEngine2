@@ -218,7 +218,7 @@ static const double kAVAudioSession0dBGain = 0.75;
         weakSelf.inputGain = weakSelf.inputGain;
         
         if ( weakSelf.running ) {
-            [self updateStreamFormat];
+            [weakSelf updateStreamFormat];
         }
     }];
     
