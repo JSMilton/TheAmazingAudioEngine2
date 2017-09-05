@@ -60,6 +60,7 @@ extern "C" {
 #import <TheAmazingAudioEngine/AERenderer.h>
 #import <TheAmazingAudioEngine/AERenderContext.h>
 #import <TheAmazingAudioEngine/AEAudioUnitOutput.h>
+#import <TheAmazingAudioEngine/AEAudioUnitV3Output.h>
 #import <TheAmazingAudioEngine/AEAudioFileOutput.h>
 
 #import <TheAmazingAudioEngine/AEUtilities.h>

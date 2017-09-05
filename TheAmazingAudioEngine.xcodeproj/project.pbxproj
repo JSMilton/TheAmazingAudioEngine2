@@ -287,6 +287,12 @@
 		4CE5F4D11CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
 		4CE5F4D21CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
 		4CE5F4D31CD3169C00322F03 /* AEAudioThreadEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */; };
+		59B940BE1F5DD881001481D4 /* AEAudioUnitV3Output.h in Headers */ = {isa = PBXBuildFile; fileRef = 59B940BC1F5DD881001481D4 /* AEAudioUnitV3Output.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		59B940BF1F5DD881001481D4 /* AEAudioUnitV3Output.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59B940BD1F5DD881001481D4 /* AEAudioUnitV3Output.mm */; };
+		59B940C21F5DE69A001481D4 /* AEAudioUnitV3Output.h in Headers */ = {isa = PBXBuildFile; fileRef = 59B940BC1F5DD881001481D4 /* AEAudioUnitV3Output.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		59B940C31F5DE69A001481D4 /* AEAudioUnitV3Output.h in Headers */ = {isa = PBXBuildFile; fileRef = 59B940BC1F5DD881001481D4 /* AEAudioUnitV3Output.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		59B940C41F5DE6A2001481D4 /* AEAudioUnitV3Output.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59B940BD1F5DD881001481D4 /* AEAudioUnitV3Output.mm */; };
+		59B940C51F5DE6A2001481D4 /* AEAudioUnitV3Output.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59B940BD1F5DD881001481D4 /* AEAudioUnitV3Output.mm */; };
 		C8FFFA761EE0441E0048E314 /* AETimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8FFFA751EE0441E0048E314 /* AETimeTests.m */; };
 /* End PBXBuildFile section */
 
@@ -442,6 +448,9 @@
 		4CE5F4CA1CD3135800322F03 /* AECrossThreadMessagingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AECrossThreadMessagingTests.m; sourceTree = "<group>"; };
 		4CE5F4CC1CD3169C00322F03 /* AEAudioThreadEndpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AEAudioThreadEndpoint.h; sourceTree = "<group>"; };
 		4CE5F4CD1CD3169C00322F03 /* AEAudioThreadEndpoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AEAudioThreadEndpoint.m; sourceTree = "<group>"; };
+		59B940BC1F5DD881001481D4 /* AEAudioUnitV3Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEAudioUnitV3Output.h; sourceTree = "<group>"; };
+		59B940BD1F5DD881001481D4 /* AEAudioUnitV3Output.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AEAudioUnitV3Output.mm; sourceTree = "<group>"; };
+		59B940C01F5DD95B001481D4 /* BufferedAudioBus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BufferedAudioBus.hpp; sourceTree = "<group>"; };
 		C8FFFA751EE0441E0048E314 /* AETimeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AETimeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -682,10 +691,13 @@
 		4CDCADB21CABDE62008AAEF1 /* Outputs */ = {
 			isa = PBXGroup;
 			children = (
+				59B940C01F5DD95B001481D4 /* BufferedAudioBus.hpp */,
 				4CDCADB31CABDE62008AAEF1 /* AEAudioUnitOutput.h */,
 				4CDCADB41CABDE62008AAEF1 /* AEAudioUnitOutput.m */,
 				4C3183161CDEC6560085634F /* AEAudioFileOutput.h */,
 				4C3183171CDEC6560085634F /* AEAudioFileOutput.m */,
+				59B940BC1F5DD881001481D4 /* AEAudioUnitV3Output.h */,
+				59B940BD1F5DD881001481D4 /* AEAudioUnitV3Output.mm */,
 			);
 			path = Outputs;
 			sourceTree = "<group>";
@@ -718,6 +730,7 @@
 				4C9F0F5C1CB265F90032903E /* AEAudioUnitInputModule.h in Headers */,
 				4C9F0F5D1CB265F90032903E /* AEAudioUnitModule.h in Headers */,
 				4C3183111CDDEFDE0085634F /* AEMixerModule.h in Headers */,
+				59B940C21F5DE69A001481D4 /* AEAudioUnitV3Output.h in Headers */,
 				4C9F0F5E1CB265F90032903E /* AELowPassModule.h in Headers */,
 				4C9F0F5F1CB265F90032903E /* AEDynamicsProcessorModule.h in Headers */,
 				4C9F0F601CB265F90032903E /* AEBandpassModule.h in Headers */,
@@ -768,6 +781,7 @@
 				4C9F0FA51CB269C30032903E /* AEAudioUnitInputModule.h in Headers */,
 				4C9F0FA61CB269C30032903E /* AEAudioUnitModule.h in Headers */,
 				4C3183121CDDEFDE0085634F /* AEMixerModule.h in Headers */,
+				59B940C31F5DE69A001481D4 /* AEAudioUnitV3Output.h in Headers */,
 				4C9F0FA71CB269C30032903E /* AELowPassModule.h in Headers */,
 				4C9F0FA81CB269C30032903E /* AEDynamicsProcessorModule.h in Headers */,
 				4C9F0FA91CB269C30032903E /* AEBandpassModule.h in Headers */,
@@ -810,6 +824,7 @@
 				4CB2F2FF1D49ABC6008F745F /* AETypes.h in Headers */,
 				4CDCAD8C1CA5484D008AAEF1 /* AEPeakLimiterModule.h in Headers */,
 				4C94E2991CADFFB6006EB497 /* AEDSPUtilities.h in Headers */,
+				59B940BE1F5DD881001481D4 /* AEAudioUnitV3Output.h in Headers */,
 				4CDCAD821CA5484D008AAEF1 /* AEHighShelfModule.h in Headers */,
 				4CDCAD7C1CA5484D008AAEF1 /* AEDistortionModule.h in Headers */,
 				4CDCAD581CA50366008AAEF1 /* AEAudioUnitInputModule.h in Headers */,
@@ -1006,6 +1021,7 @@
 				4C43E5AD1CF131290000DB62 /* AEAudioFileReader.m in Sources */,
 				4C31831C1CDEC6560085634F /* AEAudioFileOutput.m in Sources */,
 				4C636E0E1D0D2E54005A380B /* AERealtimeWatchdog.m in Sources */,
+				59B940C41F5DE6A2001481D4 /* AEAudioUnitV3Output.mm in Sources */,
 				4C9F0F431CB265F90032903E /* AEAudioFilePlayerModule.m in Sources */,
 				4C9F0F441CB265F90032903E /* AEUtilities.m in Sources */,
 				4C7756991CD2E5C6004415A2 /* TPCircularBuffer+AudioBufferList.c in Sources */,
@@ -1058,6 +1074,7 @@
 				4C43E5AE1CF131290000DB62 /* AEAudioFileReader.m in Sources */,
 				4C31831D1CDEC6560085634F /* AEAudioFileOutput.m in Sources */,
 				4C636E0F1D0D2E54005A380B /* AERealtimeWatchdog.m in Sources */,
+				59B940C51F5DE6A2001481D4 /* AEAudioUnitV3Output.mm in Sources */,
 				4C9F0F8D1CB269C30032903E /* AEAudioFilePlayerModule.m in Sources */,
 				4C9F0F8E1CB269C30032903E /* AEUtilities.m in Sources */,
 				4C77569A1CD2E5C6004415A2 /* TPCircularBuffer+AudioBufferList.c in Sources */,
@@ -1078,6 +1095,7 @@
 			files = (
 				4CDCAD8B1CA5484D008AAEF1 /* AEParametricEqModule.m in Sources */,
 				4CDCAD831CA5484D008AAEF1 /* AEHighShelfModule.m in Sources */,
+				59B940BF1F5DD881001481D4 /* AEAudioUnitV3Output.mm in Sources */,
 				4CB2F2E41D49ABC6008F745F /* AEArray.m in Sources */,
 				4C636E251D0D7BFE005A380B /* AERealtimeWatchdog-arm64.s in Sources */,
 				4C94E29A1CADFFB6006EB497 /* AEDSPUtilities.m in Sources */,
