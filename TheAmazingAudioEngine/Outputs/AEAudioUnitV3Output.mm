@@ -9,6 +9,7 @@
 #import "AEAudioUnitV3Output.h"
 #import "AERenderer.h"
 #import "AEManagedValue.h"
+
 #include "BufferedAudioBus.hpp"
 
 @interface AEAudioUnitV3Output ()
@@ -82,7 +83,6 @@
 
 - (AUInternalRenderBlock)internalRenderBlock
 {
-    __block AEManagedValue *rendererValue = self.rendererValue;
     return ^AUAudioUnitStatus(
                               AudioUnitRenderActionFlags *actionFlags,
                               const AudioTimeStamp       *timestamp,
@@ -92,9 +92,15 @@
                               const AURenderEvent        *realtimeEventListHead,
                               AURenderPullInputBlock      pullInputBlock) {
         
+        AURenderEvent const *event = realtimeEventListHead;
+        while (event) {
+            printf("%i\n", event->head.eventType);
+            event = event->head.next;
+        }
+        
         _outputBusBuffer.prepareOutputBufferList(outputData, frameCount, true);
         
-        __unsafe_unretained AERenderer *renderer = (__bridge AERenderer*)AEManagedValueGetValue(rendererValue);
+        __unsafe_unretained AERenderer *renderer = (__bridge AERenderer*)AEManagedValueGetValue(_rendererValue);
         AERendererRun(renderer, outputData, frameCount, timestamp);
         
         return noErr;
