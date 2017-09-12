@@ -32,6 +32,8 @@ extern "C" {
 #import <AudioToolbox/AudioToolbox.h>
 #import "AETime.h"
 #import "AETypes.h"
+    
+extern const AEHostTicks AEAudioFileOutputInitialHostTicksValue; //!< Initial host ticks value for time zero
 
 @class AERenderer;
 
@@ -67,14 +69,14 @@ typedef BOOL (^AEAudioFileOutputConditionBlock)();
  * Initializer
  *
  * @param renderer Renderer to use to drive processing
- * @param url URL to the file to write to
+ * @param path Path to the file to write to
  * @param type The type of the file to write
  * @param sampleRate Sample rate to use
  * @param channelCount Number of channels
  * @param error If not NULL, the error on output
  */
 - (instancetype _Nullable)initWithRenderer:(AERenderer * _Nonnull)renderer
-                                       URL:(NSURL * _Nonnull)url
+                                      path:(NSString * _Nonnull)path
                                       type:(AEAudioFileType)type
                                 sampleRate:(double)sampleRate
                               channelCount:(int)channelCount
@@ -119,8 +121,8 @@ typedef BOOL (^AEAudioFileOutputConditionBlock)();
 //! The channel count
 @property (nonatomic, readonly) int numberOfChannels;
 
-//! The URL of the output file
-@property (nonatomic, strong, readonly) NSURL * _Nonnull fileURL;
+//! The path of the output file
+@property (nonatomic, strong, readonly) NSString * _Nonnull path;
 
 //! The number of frames recorded so far
 @property (nonatomic, readonly) UInt64 numberOfFramesRecorded;
