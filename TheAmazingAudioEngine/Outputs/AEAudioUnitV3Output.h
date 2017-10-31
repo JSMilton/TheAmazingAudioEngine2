@@ -7,12 +7,16 @@
 //
 
 #import <AudioToolbox/AudioToolbox.h>
+#import "AETime.h"
 
 @class AERenderer;
+
+typedef void (^AEAUV3MIDIReceivedBlock)(UInt32 eventOffset, uint8_t statusByte, uint8_t dataByte1, uint8_t dataByte2);
 
 @interface AEAudioUnitV3Output : AUAudioUnit
 
 @property (nonatomic, strong) AERenderer * _Nullable renderer;
+@property (copy) AEAUV3MIDIReceivedBlock midiReceivedBlock;
 
 - (instancetype _Nullable)initWithRenderer:(AERenderer * _Nonnull)renderer
                       componentDescription:(AudioComponentDescription)componentDescription

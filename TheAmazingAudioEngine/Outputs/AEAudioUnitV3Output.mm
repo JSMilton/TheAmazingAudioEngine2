@@ -94,7 +94,13 @@
         
         AURenderEvent const *event = realtimeEventListHead;
         while (event) {
-            printf("%i\n", event->head.eventType);
+            if (event->head.eventType == AURenderEventMIDI) {
+                AEHostTicks eventTime = AEHostTicksFromSeconds(event->MIDI.eventSampleTime / 44100.0);
+                AEHostTicks hostTime = AEHostTicksFromSeconds(timestamp->mSampleTime / 44100.0);
+                if (_midiReceivedBlock) {
+                    _midiReceivedBlock(event->MIDI.eventSampleTime - timestamp->mSampleTime, event->MIDI.data[0], event->MIDI.data[1], event->MIDI.data[2]);
+                }
+            }
             event = event->head.next;
         }
         
