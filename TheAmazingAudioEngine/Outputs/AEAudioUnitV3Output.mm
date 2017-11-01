@@ -18,14 +18,18 @@
 @property AUAudioUnitBus *outputBus;
 @property AUAudioUnitBusArray *outputBusArray;
 
+@property (nonatomic, readwrite) AUParameterTree *parameterTree;
+
 @end
 
 @implementation AEAudioUnitV3Output
 {
     BufferedOutputBus _outputBusBuffer;
 }
+@synthesize parameterTree = _parameterTree;
 
 - (instancetype)initWithRenderer:(AERenderer *)renderer
+                   parameterTree:(AUParameterTree *)parameterTree
             componentDescription:(AudioComponentDescription)componentDescription
                          options:(AudioComponentInstantiationOptions)options
                            error:(NSError *__autoreleasing *)outError
@@ -45,6 +49,8 @@
     _outputBusArray = [[AUAudioUnitBusArray alloc] initWithAudioUnit:self busType:AUAudioUnitBusTypeOutput busses: @[_outputBus]];
     
     self.maximumFramesToRender = 512;
+    
+    _parameterTree = parameterTree;
     
     return self;
 }
@@ -95,8 +101,6 @@
         AURenderEvent const *event = realtimeEventListHead;
         while (event) {
             if (event->head.eventType == AURenderEventMIDI) {
-                AEHostTicks eventTime = AEHostTicksFromSeconds(event->MIDI.eventSampleTime / 44100.0);
-                AEHostTicks hostTime = AEHostTicksFromSeconds(timestamp->mSampleTime / 44100.0);
                 if (_midiReceivedBlock) {
                     _midiReceivedBlock(event->MIDI.eventSampleTime - timestamp->mSampleTime, event->MIDI.data[0], event->MIDI.data[1], event->MIDI.data[2]);
                 }

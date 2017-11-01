@@ -19,6 +19,7 @@ typedef void (^AEAUV3MIDIReceivedBlock)(UInt32 eventOffset, uint8_t statusByte, 
 @property (copy) AEAUV3MIDIReceivedBlock midiReceivedBlock;
 
 - (instancetype _Nullable)initWithRenderer:(AERenderer * _Nonnull)renderer
+                             parameterTree:(AUParameterTree *)parameterTree
                       componentDescription:(AudioComponentDescription)componentDescription
                                    options:(AudioComponentInstantiationOptions)options
                                      error:(NSError **)outError;
