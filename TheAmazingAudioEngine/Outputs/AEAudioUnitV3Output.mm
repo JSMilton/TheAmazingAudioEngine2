@@ -105,6 +105,13 @@
                     _midiReceivedBlock(event->MIDI.eventSampleTime - timestamp->mSampleTime, event->MIDI.data[0], event->MIDI.data[1], event->MIDI.data[2]);
                 }
             }
+            
+            if (event->head.eventType == AURenderEventParameter) {
+                if (_parameterChangeBlock) {
+                    _parameterChangeBlock(0, event->parameter.parameterAddress, event->parameter.value);
+                }
+            }
+            
             event = event->head.next;
         }
         
