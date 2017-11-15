@@ -89,6 +89,8 @@ extern "C" {
  */
 - (void)setParameterValue:(double)value forId:(AudioUnitParameterID)parameterId;
 
+void AEAudioUnitModuleSetParameter(__unsafe_unretained AEAudioUnitModule * _Nonnull module, double value, AudioUnitParameterID parameterId);
+
 /*!
  * Setup audio unit
  *

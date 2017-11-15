@@ -328,4 +328,9 @@ AudioUnit AEAudioUnitModuleGetAudioUnit(__unsafe_unretained AEAudioUnitModule * 
     return self->_audioUnit;
 }
 
+void AEAudioUnitModuleSetParameter(__unsafe_unretained AEAudioUnitModule * _Nonnull module, double value, AudioUnitParameterID parameterId) {
+    AECheckOSStatus(AudioUnitSetParameter(module->_audioUnit, parameterId, kAudioUnitScope_Global, 0, value, 0),
+                    "AudioUnitSetParameter function");
+}
+
 @end
