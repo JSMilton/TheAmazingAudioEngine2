@@ -13,12 +13,14 @@
 
 typedef void (^AEAUV3MIDIReceivedBlock)(UInt32 eventOffset, uint8_t statusByte, uint8_t dataByte1, uint8_t dataByte2);
 typedef void (^AEAUV3ParameterChangeBlock)(UInt32 eventOffset, AUParameterAddress address, AUValue value);
+typedef void (^AEAUV3MusicContextChangedBlock)(double tempo);
 
 @interface AEAudioUnitV3Output : AUAudioUnit
 
 @property (nonatomic, strong) AERenderer * _Nullable renderer;
 @property (copy) AEAUV3MIDIReceivedBlock midiReceivedBlock;
 @property (copy) AEAUV3ParameterChangeBlock parameterChangeBlock;
+@property (copy) AEAUV3MusicContextChangedBlock musicContextChangedBlock;
 
 - (instancetype _Nullable)initWithRenderer:(AERenderer * _Nonnull)renderer
                              parameterTree:(AUParameterTree *)parameterTree

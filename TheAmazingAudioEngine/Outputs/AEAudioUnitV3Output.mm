@@ -25,8 +25,10 @@
 @implementation AEAudioUnitV3Output
 {
     BufferedOutputBus _outputBusBuffer;
+    //AUHostMusicalContextBlock _musicalContextBlockCache;
 }
 @synthesize parameterTree = _parameterTree;
+@synthesize musicalContextBlock = _musicalContextBlock;
 
 - (instancetype)initWithRenderer:(AERenderer *)renderer
                    parameterTree:(AUParameterTree *)parameterTree
@@ -97,6 +99,14 @@
                               AudioBufferList            *outputData,
                               const AURenderEvent        *realtimeEventListHead,
                               AURenderPullInputBlock      pullInputBlock) {
+        
+        if (_musicalContextBlock) {
+            double tempo = 0;
+            _musicalContextBlock(&tempo, NULL, NULL, NULL, NULL, NULL);
+            if (_musicContextChangedBlock) {
+                _musicContextChangedBlock(tempo);
+            }
+        }
         
         AURenderEvent const *event = realtimeEventListHead;
         while (event) {
