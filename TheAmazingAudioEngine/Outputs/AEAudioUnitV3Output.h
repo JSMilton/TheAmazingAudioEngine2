@@ -28,4 +28,6 @@ typedef void (^AEAUV3MusicContextChangedBlock)(double tempo);
                                    options:(AudioComponentInstantiationOptions)options
                                      error:(NSError **)outError;
 
+extern NSString * AEAUV3CurrentPresetChangedNotification;
+
 @end

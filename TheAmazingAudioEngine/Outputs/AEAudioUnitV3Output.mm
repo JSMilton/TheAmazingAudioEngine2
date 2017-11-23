@@ -12,6 +12,8 @@
 
 #include "BufferedAudioBus.hpp"
 
+NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChangedNotification";
+
 @interface AEAudioUnitV3Output ()
 
 @property (nonatomic, strong) AEManagedValue * rendererValue;
@@ -25,7 +27,6 @@
 @implementation AEAudioUnitV3Output
 {
     BufferedOutputBus _outputBusBuffer;
-    //AUHostMusicalContextBlock _musicalContextBlockCache;
 }
 @synthesize parameterTree = _parameterTree;
 @synthesize musicalContextBlock = _musicalContextBlock;
@@ -87,6 +88,18 @@
     _outputBusBuffer.deallocateRenderResources();
     
     [super deallocateRenderResources];
+}
+
+- (void)setCurrentPreset:(AUAudioUnitPreset *)currentPreset
+{
+    [super setCurrentPreset:currentPreset];
+    [[NSNotificationCenter defaultCenter] postNotificationName:AEAUV3CurrentPresetChangedNotification object:nil];
+}
+
+- (void)setFullState:(NSDictionary<NSString *,id> *)fullState
+{
+    [super setFullState:fullState];
+    [[NSNotificationCenter defaultCenter] postNotificationName:AEAUV3CurrentPresetChangedNotification object:nil];
 }
 
 - (AUInternalRenderBlock)internalRenderBlock
