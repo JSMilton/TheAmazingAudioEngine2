@@ -15,19 +15,23 @@ typedef void (^AEAUV3MIDIReceivedBlock)(UInt32 eventOffset, uint8_t statusByte, 
 typedef void (^AEAUV3ParameterChangeBlock)(UInt32 eventOffset, AUParameterAddress address, AUValue value);
 typedef void (^AEAUV3MusicContextChangedBlock)(double tempo);
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface AEAudioUnitV3Output : AUAudioUnit
 
 @property (nonatomic, strong) AERenderer * _Nullable renderer;
-@property (copy) AEAUV3MIDIReceivedBlock midiReceivedBlock;
-@property (copy) AEAUV3ParameterChangeBlock parameterChangeBlock;
-@property (copy) AEAUV3MusicContextChangedBlock musicContextChangedBlock;
+@property (copy, nullable) AEAUV3MIDIReceivedBlock midiReceivedBlock;
+@property (copy, nullable) AEAUV3ParameterChangeBlock parameterChangeBlock;
+@property (copy, nullable) AEAUV3MusicContextChangedBlock musicContextChangedBlock;
 
-- (instancetype _Nullable)initWithRenderer:(AERenderer * _Nonnull)renderer
-                             parameterTree:(AUParameterTree *)parameterTree
+- (instancetype _Nullable)initWithRenderer:(AERenderer *)renderer
+                             parameterTree:(nullable AUParameterTree *)parameterTree
                       componentDescription:(AudioComponentDescription)componentDescription
                                    options:(AudioComponentInstantiationOptions)options
-                                     error:(NSError **)outError;
+                                     error:(NSError * _Nullable *)outError;
 
 extern NSString * AEAUV3CurrentPresetChangedNotification;
+
+NS_ASSUME_NONNULL_END
 
 @end

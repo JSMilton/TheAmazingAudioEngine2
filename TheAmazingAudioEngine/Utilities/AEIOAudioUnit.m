@@ -564,15 +564,15 @@ static OSStatus AEIOAudioUnitInputCallback(void *inRefCon, AudioUnitRenderAction
     return noErr;
 }
 
-static void AEIOAudioUnitStreamFormatChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,
-                                             AudioUnitScope inScope, AudioUnitElement inElement) {
-    AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( self.running ) {
-            [self updateStreamFormat];
-        }
-    });
-}
+//static void AEIOAudioUnitStreamFormatChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,
+//                                             AudioUnitScope inScope, AudioUnitElement inElement) {
+//    AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if ( self.running ) {
+//            [self updateStreamFormat];
+//        }
+//    });
+//}
 
 #if TARGET_OS_IPHONE
 static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,

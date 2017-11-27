@@ -87,7 +87,7 @@ static const UInt32 kNoValue = -1;
     }
 }
 
-- (void)setCompletionBlock:(void (^)())completionBlock {
+- (void)setCompletionBlock:(void (^)(void))completionBlock {
     _completionBlock = completionBlock;
     
     if ( _completionBlock && !self.mainThreadEndpointValue.objectValue && !self.loop ) {
