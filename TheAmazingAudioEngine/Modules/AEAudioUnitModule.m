@@ -333,4 +333,10 @@ void AEAudioUnitModuleSetParameter(__unsafe_unretained AEAudioUnitModule * _Nonn
                     "AudioUnitSetParameter function");
 }
 
+double AEAudioUnitModuleGetParameter(__unsafe_unretained AEAudioUnitModule * _Nonnull module, AudioUnitParameterID parameterId) {
+    float value = 0;
+    AECheckOSStatus(AudioUnitGetParameter(module->_audioUnit, parameterId, kAudioUnitScope_Global, 0, &value), "AudioUnitGetParameter function");
+    return value;
+}
+
 @end
