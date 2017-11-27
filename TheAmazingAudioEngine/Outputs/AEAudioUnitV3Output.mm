@@ -44,9 +44,6 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
     
     AVAudioFormat *defaultFormat = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100. channels:2];
     
-    self.renderer.sampleRate = defaultFormat.sampleRate;
-    self.renderer.numberOfOutputChannels = defaultFormat.channelCount;
-    
     _outputBusBuffer.init(defaultFormat, 2);
     _outputBus = _outputBusBuffer.bus;
     _outputBusArray = [[AUAudioUnitBusArray alloc] initWithAudioUnit:self busType:AUAudioUnitBusTypeOutput busses: @[_outputBus]];
@@ -54,6 +51,8 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
     self.maximumFramesToRender = 512;
     
     _parameterTree = parameterTree;
+    
+    [_outputBus addObserver:self forKeyPath:@"format" options:0 context:nil];
     
     return self;
 }
@@ -63,10 +62,7 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
 }
 
 - (void)setRenderer:(AERenderer *)renderer {
-//    renderer.sampleRate = self.ioUnit.currentSampleRate;
-//    renderer.numberOfOutputChannels = self.ioUnit.numberOfOutputChannels;
     renderer.isOffline = NO;
-    
     self.rendererValue.objectValue = renderer;
 }
 
@@ -86,7 +82,6 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
 
 - (void)deallocateRenderResources {
     _outputBusBuffer.deallocateRenderResources();
-    
     [super deallocateRenderResources];
 }
 
@@ -145,6 +140,22 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
         
         return noErr;
     };
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey,id> *)change
+                       context:(void *)context
+{
+    if ([keyPath isEqualToString:@"format"]) {
+        self.renderer.sampleRate = _outputBus.format.sampleRate;
+        self.renderer.numberOfOutputChannels = _outputBus.format.channelCount;
+    }
+}
+
+- (void)dealloc
+{
+    [_outputBus removeObserver:self forKeyPath:@"format"];
 }
 
 @end
