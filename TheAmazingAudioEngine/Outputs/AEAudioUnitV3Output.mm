@@ -77,6 +77,10 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
     
     _outputBusBuffer.allocateRenderResources(self.maximumFramesToRender);
     
+    if (self.allocateBlock) {
+        self.allocateBlock();
+    }
+    
     return YES;
 }
 

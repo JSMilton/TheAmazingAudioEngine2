@@ -15,6 +15,7 @@ typedef void (^AEAUV3MIDIReceivedBlock)(UInt32 eventOffset, uint8_t statusByte, 
 typedef void (^AEAUV3ParameterChangeBlock)(UInt32 eventOffset, AUParameterAddress address, AUValue value);
 typedef void (^AEAUV3MusicContextChangedBlock)(double tempo);
 typedef void (^AEAUV3DeallocateBlock)(void);
+typedef void (^AEAUV3AllocateBlock)(void);
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (copy, nullable) AEAUV3ParameterChangeBlock parameterChangeBlock;
 @property (copy, nullable) AEAUV3MusicContextChangedBlock musicContextChangedBlock;
 @property (copy, nullable) AEAUV3DeallocateBlock deallocateBlock;
+@property (copy, nullable) AEAUV3AllocateBlock allocateBlock;
 
 - (instancetype _Nullable)initWithRenderer:(AERenderer *)renderer
                              parameterTree:(nullable AUParameterTree *)parameterTree
