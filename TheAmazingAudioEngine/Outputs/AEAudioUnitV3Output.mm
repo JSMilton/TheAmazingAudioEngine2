@@ -48,7 +48,7 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
     _outputBus = _outputBusBuffer.bus;
     _outputBusArray = [[AUAudioUnitBusArray alloc] initWithAudioUnit:self busType:AUAudioUnitBusTypeOutput busses: @[_outputBus]];
     
-    self.maximumFramesToRender = 512;
+    self.maximumFramesToRender = 1024;
     
     _parameterTree = parameterTree;
     
@@ -82,6 +82,9 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
 
 - (void)deallocateRenderResources {
     _outputBusBuffer.deallocateRenderResources();
+    if (self.deallocateBlock) {
+        self.deallocateBlock();
+    }
     [super deallocateRenderResources];
 }
 
