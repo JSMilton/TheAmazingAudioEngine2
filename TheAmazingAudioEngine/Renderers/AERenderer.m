@@ -28,6 +28,12 @@
 #import "AETypes.h"
 #import "AEManagedValue.h"
 #import "AEAudioBufferListUtilities.h"
+#import "AEUtilities.h"
+#import "AETime.h"
+
+#ifdef DEBUG
+//#define MONITOR_RENDER_TIME
+#endif
 
 NSString * const AERendererDidChangeSampleRateNotification = @"AERendererDidChangeSampleRateNotification";
 NSString * const AERendererDidChangeNumberOfOutputChannelsNotification = @"AERendererDidChangeNumberOfOutputChannelsNotification";
@@ -58,6 +64,10 @@ NSString * const AERendererDidChangeNumberOfOutputChannelsNotification = @"AERen
 void AERendererRun(__unsafe_unretained AERenderer * THIS, const AudioBufferList * bufferList, UInt32 frames,
                    const AudioTimeStamp * timestamp) {
     
+#ifdef MONITOR_RENDER_TIME
+    double start = AECurrentTimeInSeconds();
+#endif
+    
     // Reset the buffer stack, and set the frame count/timestamp
     AEBufferStackReset(THIS->_stack);
     AEBufferStackSetFrameCount(THIS->_stack, frames);
@@ -87,6 +97,12 @@ void AERendererRun(__unsafe_unretained AERenderer * THIS, const AudioBufferList 
         
         block(&context);
     }
+    
+#ifdef MONITOR_RENDER_TIME
+    if (AERateLimit()) {
+        printf("%f\n", AECurrentTimeInSeconds() - start);
+    }
+#endif
 }
 
 - (void)setBlock:(AERenderLoopBlock)block {
