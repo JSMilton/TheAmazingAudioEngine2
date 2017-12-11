@@ -9,6 +9,7 @@
 #import "AEAudioUnitV3Output.h"
 #import "AERenderer.h"
 #import "AEManagedValue.h"
+#import "AEUtilities.h"
 
 #include "BufferedAudioBus.hpp"
 
@@ -115,6 +116,10 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
                               const AURenderEvent        *realtimeEventListHead,
                               AURenderPullInputBlock      pullInputBlock) {
         
+#ifdef DEBUG
+        double start = AECurrentTimeInSeconds();
+#endif
+        
         if (_musicalContextBlock) {
             double tempo = 0;
             _musicalContextBlock(&tempo, NULL, NULL, NULL, NULL, NULL);
@@ -144,6 +149,12 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
         
         __unsafe_unretained AERenderer *renderer = (__bridge AERenderer*)AEManagedValueGetValue(_rendererValue);
         AERendererRun(renderer, outputData, frameCount, timestamp);
+        
+#ifdef DEBUG
+        if (AERateLimit()) {
+            printf("%f\n", AECurrentTimeInSeconds() - start);
+        }
+#endif
         
         return noErr;
     };
