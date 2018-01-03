@@ -55,7 +55,7 @@ static const UInt32 kNoValue = -1;
 }
 @property (nonatomic, strong, readwrite) NSString * path;
 @property (nonatomic, strong) AEManagedValue * mainThreadEndpointValue;
-@property (nonatomic, copy) void(^beginBlock)();
+@property (nonatomic, copy) void(^beginBlock)(void);
 @end
 
 @implementation AEAudioFilePlayerModule

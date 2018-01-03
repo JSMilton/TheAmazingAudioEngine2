@@ -49,9 +49,10 @@ typedef void (^AEAudioPasteboardGeneratorBlock)(AudioBufferList * buffer, UInt32
 /*!
  * Get info about the current pasteboard item
  *
- *  Returns a dictionary of items (keyed by the AEAudioPasteboardInfo keys), or nil if there's no audio on the pasteboard
+ *  Provides, via the completion block, a dictionary of items (keyed by the AEAudioPasteboardInfo
+ *  keys), or nil if there's no audio on the pasteboard
  */
-+ (NSDictionary *)infoForGeneralPasteboardItem;
++ (void)loadInfoForAudioPasteboardItemWithCompletionBlock:(void(^)(NSDictionary * info))block;
 
 /*!
  * Paste the pasteboard contents to a file
@@ -102,7 +103,7 @@ typedef void (^AEAudioPasteboardGeneratorBlock)(AudioBufferList * buffer, UInt32
 /*!
  * Create an instance for reading
  */
-+ (instancetype)readerForGeneralPasteboardItem;
++ (instancetype)readerForAudioPasteboardItem;
 
 /*!
  * Read the next piece of audio into the given buffer
@@ -112,8 +113,9 @@ typedef void (^AEAudioPasteboardGeneratorBlock)(AudioBufferList * buffer, UInt32
  *
  * @param buffer The buffer to write to
  * @param ioFrames On input, the number of frames to write; on output, number of frames written
+ * @return OS Status
  */
-- (void)readIntoBuffer:(AudioBufferList *)buffer length:(UInt32 *)ioFrames;
+- (OSStatus)readIntoBuffer:(AudioBufferList *)buffer length:(UInt32 *)ioFrames;
 
 /*!
  * Reset the reader to the beginning of the clipboard contents

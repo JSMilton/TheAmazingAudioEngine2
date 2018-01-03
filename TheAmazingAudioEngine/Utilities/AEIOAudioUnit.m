@@ -268,7 +268,10 @@ static const double kAVAudioSession0dBGain = 0.75;
     [self updateStreamFormat];
     
     // Start unit
+    [self willChangeValueForKey:@"running"];
     OSStatus result = AudioOutputUnitStart(_audioUnit);
+    [self didChangeValueForKey:@"running"];
+    
     if ( !AECheckOSStatus(result, "AudioOutputUnitStart") ) {
         if ( error ) *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:result
                                               userInfo:@{ NSLocalizedDescriptionKey: @"Unable to start IO unit" }];
@@ -282,7 +285,9 @@ static const double kAVAudioSession0dBGain = 0.75;
     NSAssert(_audioUnit, @"You must call setup: on this instance before starting or stopping it");
     
     // Stop unit
+    [self willChangeValueForKey:@"running"];
     AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
+    [self didChangeValueForKey:@"running"];
 }
 
 AudioUnit _Nonnull AEIOAudioUnitGetAudioUnit(__unsafe_unretained AEIOAudioUnit * _Nonnull THIS) {
@@ -579,7 +584,20 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
                                               AudioUnitScope inScope, AudioUnitElement inElement) {
     AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self willChangeValueForKey:@"running"];
+        
         [self updateStreamFormat];
+        
+        UInt32 iaaConnected = NO;
+        UInt32 size = sizeof(iaaConnected);
+        if ( AECheckOSStatus(AudioUnitGetProperty(self.audioUnit, kAudioUnitProperty_IsInterAppConnected,
+                                                  kAudioUnitScope_Global, 0, &iaaConnected, &size),
+                             "AudioUnitGetProperty(kAudioUnitProperty_IsInterAppConnected)") && iaaConnected && !self.running ) {
+            // Start, if connected to IAA and not running
+            [self start:NULL];
+        }
+        
+        [self didChangeValueForKey:@"running"];
     });
 }
 #endif
