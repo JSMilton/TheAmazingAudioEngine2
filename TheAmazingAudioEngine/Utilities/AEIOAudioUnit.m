@@ -175,9 +175,9 @@ static const double kAVAudioSession0dBGain = 0.75;
     [self updateStreamFormat];
     
     // Register a callback to watch for stream format changes
-//    AECheckOSStatus(AudioUnitAddPropertyListener(_audioUnit, kAudioUnitProperty_StreamFormat, AEIOAudioUnitStreamFormatChanged,
-//                                                 (__bridge void*)self),
-//                    "AudioUnitAddPropertyListener(kAudioUnitProperty_StreamFormat)");
+    AECheckOSStatus(AudioUnitAddPropertyListener(_audioUnit, kAudioUnitProperty_StreamFormat, AEIOAudioUnitStreamFormatChanged,
+                                                 (__bridge void*)self),
+                    "AudioUnitAddPropertyListener(kAudioUnitProperty_StreamFormat)");
     
 #if TARGET_OS_IPHONE
     __weak typeof(self) weakSelf = self;
@@ -194,12 +194,15 @@ static const double kAVAudioSession0dBGain = 0.75;
 //                [weakSelf stop];
 //            }
 //        } else {
-//            if ( wasRunning ) {
-//                [weakSelf start:NULL];
+//            NSUInteger optionFlags =
+//                [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
+//            if (optionFlags & AVAudioSessionInterruptionOptionShouldResume) {
+//                if ( wasRunning ) {
+//                    [weakSelf start:NULL];
+//                }
 //            }
 //        }
 //    }];
-//
     
     // Watch for media reset notifications
     self.mediaResetObserverToken =
@@ -216,10 +219,6 @@ static const double kAVAudioSession0dBGain = 0.75;
         weakSelf.outputLatency = [AVAudioSession sharedInstance].outputLatency;
         weakSelf.inputLatency = [AVAudioSession sharedInstance].inputLatency;
         weakSelf.inputGain = weakSelf.inputGain;
-        
-        if ( weakSelf.running ) {
-            [weakSelf updateStreamFormat];
-        }
     }];
     
     // Register callback to watch for Inter-App Audio connections
@@ -569,15 +568,15 @@ static OSStatus AEIOAudioUnitInputCallback(void *inRefCon, AudioUnitRenderAction
     return noErr;
 }
 
-//static void AEIOAudioUnitStreamFormatChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,
-//                                             AudioUnitScope inScope, AudioUnitElement inElement) {
-//    AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        if ( self.running ) {
-//            [self updateStreamFormat];
-//        }
-//    });
-//}
+static void AEIOAudioUnitStreamFormatChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,
+                                             AudioUnitScope inScope, AudioUnitElement inElement) {
+    AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( self.running ) {
+            [self updateStreamFormat];
+        }
+    });
+}
 
 #if TARGET_OS_IPHONE
 static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, AudioUnitPropertyID inID,
