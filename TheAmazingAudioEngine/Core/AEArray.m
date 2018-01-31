@@ -106,6 +106,12 @@ typedef struct {
     return [self pointerValueAtIndex:(int)index];
 }
 
+- (void)updatePointerValueForObject:(id)object
+{
+    void *value = _mappingBlock(object);
+    [self updatePointerValue:value forObject:object];
+}
+
 - (void)updatePointerValue:(void *)value forObject:(id)object {
     array_t * array = (array_t*)_value.pointerValue;
     if ( !array->objects ) return;

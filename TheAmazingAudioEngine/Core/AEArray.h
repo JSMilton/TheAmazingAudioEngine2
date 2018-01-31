@@ -230,6 +230,8 @@ typedef void (^AEArrayReleaseBlock)(ObjectType _Nonnull item, void * _Nonnull pt
  */
 - (void)updatePointerValue:(void * _Nullable)value forObject:(ObjectType _Nonnull)object;
 
+- (void)updatePointerValueForObject:(ObjectType _Nonnull)object;
+
 /*!
  * Determine if object is present in array, optionally returning its equivalent pointer value
  *
