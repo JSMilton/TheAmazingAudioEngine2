@@ -36,12 +36,15 @@
 
 NSString * const AEIOAudioUnitDidUpdateStreamFormatNotification = @"AEIOAudioUnitDidUpdateStreamFormatNotification";
 NSString * const AEIOAudioUnitDidSetupNotification = @"AEIOAudioUnitDidSetupNotification";
+NSString * const AEIOAudioUnitSessionInterruptionBeganNotification = @"AEIOAudioUnitSessionInterruptionBeganNotification";
+NSString * const AEIOAudioUnitSessionInterruptionEndedNotification = @"AEIOAudioUnitSessionInterruptionEndedNotification";
 
 static const double kAVAudioSession0dBGain = 0.75;
 
 @interface AEIOAudioUnit ()
 @property (nonatomic, strong) AEManagedValue * renderBlockValue;
 @property (nonatomic, readwrite) double currentSampleRate;
+@property (nonatomic, readwrite) BOOL running;
 @property (nonatomic, readwrite) int numberOfOutputChannels;
 @property (nonatomic, readwrite) int numberOfInputChannels;
 @property (nonatomic) AudioTimeStamp inputTimestamp;
@@ -57,7 +60,7 @@ static const double kAVAudioSession0dBGain = 0.75;
 @end
 
 @implementation AEIOAudioUnit
-@dynamic running, renderBlock, IOBufferDuration;
+@dynamic renderBlock, IOBufferDuration;
 
 - (instancetype)init {
     if ( !(self = [super init]) ) return nil;
@@ -78,19 +81,6 @@ static const double kAVAudioSession0dBGain = 0.75;
 
 - (void)dealloc {
     [self teardown];
-}
-
-- (BOOL)running {
-    if ( !_audioUnit ) return NO;
-    UInt32 unitRunning;
-    UInt32 size = sizeof(unitRunning);
-    if ( !AECheckOSStatus(AudioUnitGetProperty(_audioUnit, kAudioOutputUnitProperty_IsRunning, kAudioUnitScope_Global, 0,
-                                               &unitRunning, &size),
-                          "AudioUnitGetProperty(kAudioOutputUnitProperty_IsRunning)") ) {
-        return NO;
-    }
-    
-    return unitRunning;
 }
 
 - (BOOL)setup:(NSError * _Nullable __autoreleasing *)error {
@@ -183,6 +173,7 @@ static const double kAVAudioSession0dBGain = 0.75;
     __weak typeof(self) weakSelf = self;
     
     // Watch for session interruptions
+
 //    __block BOOL wasRunning;
 //    self.sessionInterruptionObserverToken =
 //    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification object:nil queue:nil
@@ -193,6 +184,7 @@ static const double kAVAudioSession0dBGain = 0.75;
 //            if ( wasRunning ) {
 //                [weakSelf stop];
 //            }
+//            [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionBeganNotification object:weakSelf];
 //        } else {
 //            NSUInteger optionFlags =
 //                [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
@@ -200,6 +192,7 @@ static const double kAVAudioSession0dBGain = 0.75;
 //                if ( wasRunning ) {
 //                    [weakSelf start:NULL];
 //                }
+//                [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionEndedNotification object:weakSelf];
 //            }
 //        }
 //    }];
@@ -277,11 +270,15 @@ static const double kAVAudioSession0dBGain = 0.75;
         return NO;
     }
     
+    self.running = YES;
+    
     return YES;
 }
 
 - (void)stop {
     NSAssert(_audioUnit, @"You must call setup: on this instance before starting or stopping it");
+    
+    self.running = NO;
     
     // Stop unit
     [self willChangeValueForKey:@"running"];
@@ -353,11 +350,6 @@ AESeconds AEIOAudioUnitGetOutputLatency(__unsafe_unretained AEIOAudioUnit * _Non
     
     // If not setup yet, take the sample rate from the audio session
 #if TARGET_OS_IPHONE
-    NSError * error;
-    if ( ![[AVAudioSession sharedInstance] setActive:YES error:&error] ) {
-        NSLog(@"Couldn't activate audio session: %@", error);
-        return 0.0;
-    }
     return [[AVAudioSession sharedInstance] sampleRate];
 #else
     return [self streamFormatForDefaultDeviceScope:
@@ -388,12 +380,6 @@ AESeconds AEIOAudioUnitGetOutputLatency(__unsafe_unretained AEIOAudioUnit * _Non
     
     // If not setup, take the channel count from the session
 #if TARGET_OS_IPHONE
-    NSError * error;
-    if ( ![[AVAudioSession sharedInstance] setActive:YES error:&error] ) {
-        NSLog(@"Couldn't activate audio session: %@", error);
-        return 0;
-    }
-    
     return (int)[[AVAudioSession sharedInstance] outputNumberOfChannels];
 #else
     return [self streamFormatForDefaultDeviceScope:kAudioDevicePropertyScopeOutput].mChannelsPerFrame;
@@ -457,12 +443,6 @@ AESeconds AEIOAudioUnitGetOutputLatency(__unsafe_unretained AEIOAudioUnit * _Non
     
     // If not setup, take the channel count from the session
 #if TARGET_OS_IPHONE
-    NSError * error;
-    if ( ![[AVAudioSession sharedInstance] setActive:YES error:&error] ) {
-        NSLog(@"Couldn't activate audio session: %@", error);
-        return 0;
-    }
-    
     return (int)[[AVAudioSession sharedInstance] inputNumberOfChannels];
 #else
     return [self streamFormatForDefaultDeviceScope:kAudioDevicePropertyScopeInput].mChannelsPerFrame;
