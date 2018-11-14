@@ -106,6 +106,8 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
 
 - (AUInternalRenderBlock)internalRenderBlock
 {
+    __unsafe_unretained typeof(self) THIS = self;
+    
     return ^AUAudioUnitStatus(
                               AudioUnitRenderActionFlags *actionFlags,
                               const AudioTimeStamp       *timestamp,
@@ -115,34 +117,34 @@ NSString * AEAUV3CurrentPresetChangedNotification = @"AEAUV3CurrentPresetChanged
                               const AURenderEvent        *realtimeEventListHead,
                               AURenderPullInputBlock      pullInputBlock) {
         
-        if (_musicalContextBlock) {
+        if (THIS->_musicalContextBlock) {
             double tempo = 0;
-            _musicalContextBlock(&tempo, NULL, NULL, NULL, NULL, NULL);
-            if (_musicContextChangedBlock) {
-                _musicContextChangedBlock(tempo);
+            THIS->_musicalContextBlock(&tempo, NULL, NULL, NULL, NULL, NULL);
+            if (THIS->_musicContextChangedBlock) {
+                THIS->_musicContextChangedBlock(tempo);
             }
         }
         
         AURenderEvent const *event = realtimeEventListHead;
         while (event) {
             if (event->head.eventType == AURenderEventMIDI) {
-                if (_midiReceivedBlock) {
-                    _midiReceivedBlock(event->MIDI.eventSampleTime - timestamp->mSampleTime, event->MIDI.data[0], event->MIDI.data[1], event->MIDI.data[2]);
+                if (THIS->_midiReceivedBlock) {
+                    THIS->_midiReceivedBlock(event->MIDI.eventSampleTime - timestamp->mSampleTime, event->MIDI.data[0], event->MIDI.data[1], event->MIDI.data[2]);
                 }
             }
             
             if (event->head.eventType == AURenderEventParameter) {
-                if (_parameterChangeBlock) {
-                    _parameterChangeBlock(0, event->parameter.parameterAddress, event->parameter.value);
+                if (THIS->_parameterChangeBlock) {
+                    THIS->_parameterChangeBlock(0, event->parameter.parameterAddress, event->parameter.value);
                 }
             }
             
             event = event->head.next;
         }
         
-        _outputBusBuffer.prepareOutputBufferList(outputData, frameCount, true);
+        THIS->_outputBusBuffer.prepareOutputBufferList(outputData, frameCount, true);
         
-        __unsafe_unretained AERenderer *renderer = (__bridge AERenderer*)AEManagedValueGetValue(_rendererValue);
+        __unsafe_unretained AERenderer *renderer = (__bridge AERenderer*)AEManagedValueGetValue(THIS->_rendererValue);
         AERendererRun(renderer, outputData, frameCount, timestamp);
         
         return noErr;
