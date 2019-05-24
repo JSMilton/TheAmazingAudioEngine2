@@ -22,12 +22,15 @@ const AEHostTicks AEAudioFileOutputInitialHostTicksValue = 1000;
 @property (nonatomic) ExtAudioFileRef audioFile;
 @property (nonatomic, readwrite) UInt64 numberOfFramesRecorded;
 @property (nonatomic) AudioTimeStamp timestamp;
+@property (nonatomic) int blockSize;
 @end
 
 @implementation AEAudioFileOutput
 
 - (instancetype)initWithRenderer:(AERenderer *)renderer path:(NSString *)path type:(AEAudioFileType)type
-                      sampleRate:(double)sampleRate channelCount:(int)channelCount
+                      sampleRate:(double)sampleRate
+                    channelCount:(int)channelCount
+                       blockSize:(int)blockSize
                            error:(NSError *__autoreleasing  _Nullable *)error {
     if ( !(self = [super init]) ) return nil;
 
@@ -37,6 +40,7 @@ const AEHostTicks AEAudioFileOutputInitialHostTicksValue = 1000;
     self.sampleRate = sampleRate;
     self.numberOfChannels = channelCount;
     self.renderer = renderer;
+    self.blockSize = blockSize;
     _timestamp.mFlags = kAudioTimeStampSampleTimeValid | kAudioTimeStampHostTimeValid;
     _timestamp.mHostTime = AEAudioFileOutputInitialHostTicksValue;
     
@@ -71,7 +75,7 @@ const AEHostTicks AEAudioFileOutputInitialHostTicksValue = 1000;
         UInt32 remainingFrames = round(duration * self.sampleRate);
         OSStatus status = noErr;
         while ( remainingFrames > 0 ) {
-            UInt32 frames = MIN(remainingFrames, AEBufferStackMaxFramesPerSlice);
+            UInt32 frames = MIN(remainingFrames, self.blockSize);
             AEAudioBufferListSetLength(abl, frames);
             
             // Run renderer

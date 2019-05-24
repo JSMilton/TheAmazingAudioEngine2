@@ -80,6 +80,7 @@ typedef BOOL (^AEAudioFileOutputConditionBlock)(void);
                                       type:(AEAudioFileType)type
                                 sampleRate:(double)sampleRate
                               channelCount:(int)channelCount
+                                 blockSize:(int)blockSize
                                      error:(NSError * _Nullable * _Nullable)error;
 
 /*!
