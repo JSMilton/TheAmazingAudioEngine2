@@ -1,0 +1,5 @@
+
+module TheAmazingAudioEngine {
+    header "TheAmazingAudioEngine.h"
+    export *
+}
