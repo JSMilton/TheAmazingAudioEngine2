@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1AED63FC230C5D3D00E2B47A /* module.modulemap in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1AED63FB230C5D3D00E2B47A /* module.modulemap */; };
 		3071AEFF1DC970C500A8C7E7 /* AEAudioPasteboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5A98C1D6C01800034D7F7 /* AEAudioPasteboard.m */; };
 		4C3183101CDDEFDE0085634F /* AEMixerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31830E1CDDEFDE0085634F /* AEMixerModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C3183131CDDEFDE0085634F /* AEMixerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31830F1CDDEFDE0085634F /* AEMixerModule.m */; };
@@ -114,7 +113,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				1AED63FC230C5D3D00E2B47A /* module.modulemap in CopyFiles */,
 				4CDCAC9C1CA25A29008AAEF1 /* TheAmazingAudioEngine.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,7 +120,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1AED63FB230C5D3D00E2B47A /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = TheAmazingAudioEngine/module.modulemap; sourceTree = "<group>"; };
 		2236604F1D96E34800CFA5B8 /* AENewTimePitchModuleTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AENewTimePitchModuleTests.m; sourceTree = "<group>"; };
 		4C2BCEE11DACB33E00AD7A8D /* AEAudiobusInputModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AEAudiobusInputModule.h; sourceTree = "<group>"; };
 		4C2BCEE21DACB33E00AD7A8D /* AEAudiobusInputModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AEAudiobusInputModule.m; sourceTree = "<group>"; };
@@ -278,7 +275,6 @@
 		4CDCAC8F1CA25A29008AAEF1 = {
 			isa = PBXGroup;
 			children = (
-				1AED63FB230C5D3D00E2B47A /* module.modulemap */,
 				4CDCAC9A1CA25A29008AAEF1 /* TheAmazingAudioEngine */,
 				4CDCACA91CA25A6E008AAEF1 /* Tests */,
 				4CDCAC991CA25A29008AAEF1 /* Products */,
@@ -526,10 +522,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4CDCACA11CA25A29008AAEF1 /* Build configuration list for PBXNativeTarget "TheAmazingAudioEngine" */;
 			buildPhases = (
+				4CDCACE61CA25B5D008AAEF1 /* Headers */,
 				4CDCAC941CA25A29008AAEF1 /* Sources */,
 				4CDCAC951CA25A29008AAEF1 /* Frameworks */,
 				4CDCAC961CA25A29008AAEF1 /* CopyFiles */,
-				4CDCACE61CA25B5D008AAEF1 /* Headers */,
 			);
 			buildRules = (
 			);
