@@ -45,6 +45,7 @@ static const double kAVAudioSession0dBGain = 0.75;
 @property (nonatomic, strong) AEManagedValue * renderBlockValue;
 @property (nonatomic, readwrite) double currentSampleRate;
 @property (nonatomic, readwrite) BOOL running;
+@property (nonatomic) BOOL hasSetInitialStreamFormat;
 @property (nonatomic, readwrite) int numberOfOutputChannels;
 @property (nonatomic, readwrite) int numberOfInputChannels;
 @property (nonatomic) AudioTimeStamp inputTimestamp;
@@ -172,30 +173,39 @@ static const double kAVAudioSession0dBGain = 0.75;
 #if TARGET_OS_IPHONE
     __weak typeof(self) weakSelf = self;
     
-    // Watch for session interruptions
-
-//    __block BOOL wasRunning;
-//    self.sessionInterruptionObserverToken =
-//    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification object:nil queue:nil
-//                                                  usingBlock:^(NSNotification *notification) {
-//        NSInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
-//        if ( type == AVAudioSessionInterruptionTypeBegan ) {
-//            wasRunning = weakSelf.running;
-//            if ( wasRunning ) {
-//                [weakSelf stop];
-//            }
-//            [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionBeganNotification object:weakSelf];
-//        } else {
-//            NSUInteger optionFlags =
-//                [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
-//            if (optionFlags & AVAudioSessionInterruptionOptionShouldResume) {
-//                if ( wasRunning ) {
-//                    [weakSelf start:NULL];
-//                }
-//                [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionEndedNotification object:weakSelf];
-//            }
-//        }
-//    }];
+    __block BOOL wasRunning;
+    self.sessionInterruptionObserverToken =
+    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification object:nil queue:nil
+                                                  usingBlock:^(NSNotification *notification) {
+        NSInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
+        if ( type == AVAudioSessionInterruptionTypeBegan ) {
+            wasRunning = weakSelf.running;
+            
+            UInt32 interAppAudioConnected;
+            UInt32 size = sizeof(interAppAudioConnected);
+            AECheckOSStatus(AudioUnitGetProperty(weakSelf.audioUnit, kAudioUnitProperty_IsInterAppConnected, kAudioUnitScope_Global, 0, &interAppAudioConnected, &size), "AudioUnitGetProperty");
+            if ( interAppAudioConnected ) {
+                // Restart immediately, this is a spurious interruption
+                if ( !wasRunning ) {
+                    [weakSelf start:NULL];
+                }
+            } else {
+                if ( wasRunning ) {
+                    [weakSelf stop];
+                }
+                [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionBeganNotification object:weakSelf];
+            }
+        } else {
+            NSUInteger optionFlags =
+                [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
+            if (optionFlags & AVAudioSessionInterruptionOptionShouldResume) {
+                if ( wasRunning ) {
+                    [weakSelf start:NULL];
+                }
+                [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitSessionInterruptionEndedNotification object:weakSelf];
+            }
+        }
+    }];
     
     // Watch for media reset notifications
     self.mediaResetObserverToken =
@@ -209,9 +219,11 @@ static const double kAVAudioSession0dBGain = 0.75;
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification object:nil
                                                        queue:nil usingBlock:^(NSNotification *notification)
     {
-        weakSelf.outputLatency = [AVAudioSession sharedInstance].outputLatency;
-        weakSelf.inputLatency = [AVAudioSession sharedInstance].inputLatency;
-        weakSelf.inputGain = weakSelf.inputGain;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.outputLatency = [AVAudioSession sharedInstance].outputLatency;
+            weakSelf.inputLatency = [AVAudioSession sharedInstance].inputLatency;
+            weakSelf.inputGain = weakSelf.inputGain;
+        });
     }];
     
     // Register callback to watch for Inter-App Audio connections
@@ -260,9 +272,7 @@ static const double kAVAudioSession0dBGain = 0.75;
     [self updateStreamFormat];
     
     // Start unit
-    [self willChangeValueForKey:@"running"];
     OSStatus result = AudioOutputUnitStart(_audioUnit);
-    [self didChangeValueForKey:@"running"];
     
     if ( !AECheckOSStatus(result, "AudioOutputUnitStart") ) {
         if ( error ) *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:result
@@ -281,9 +291,7 @@ static const double kAVAudioSession0dBGain = 0.75;
     self.running = NO;
     
     // Stop unit
-    [self willChangeValueForKey:@"running"];
     AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
-    [self didChangeValueForKey:@"running"];
 }
 
 AudioUnit _Nonnull AEIOAudioUnitGetAudioUnit(__unsafe_unretained AEIOAudioUnit * _Nonnull THIS) {
@@ -563,8 +571,6 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
                                               AudioUnitScope inScope, AudioUnitElement inElement) {
     AEIOAudioUnit * self = (__bridge AEIOAudioUnit *)inRefCon;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self willChangeValueForKey:@"running"];
-        
         [self updateStreamFormat];
         
         UInt32 iaaConnected = NO;
@@ -575,13 +581,12 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
             // Start, if connected to IAA and not running
             [self start:NULL];
         }
-        
-        [self didChangeValueForKey:@"running"];
     });
 }
 #endif
 
 - (void)updateStreamFormat {
+    BOOL running = self.running;
     BOOL stoppedUnit = NO;
     BOOL hasChanges = NO;
     BOOL iaaInput = NO;
@@ -617,32 +622,33 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
             asbd.mChannelsPerFrame = 2;
         }
         
-        double priorSampleRate = self.currentSampleRate;
-        self.currentSampleRate = self.sampleRate == 0 ? asbd.mSampleRate : self.sampleRate;
+        BOOL hasOutputChanges = NO;
         
-        BOOL rateChanged = fabs(priorSampleRate - _currentSampleRate) > DBL_EPSILON;
-        BOOL running = self.running;
-        if ( rateChanged && running ) {
-            AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
-            stoppedUnit = YES;
-        }
-
-        if ( rateChanged ) {
-            hasChanges = YES;
+        double newSampleRate = self.sampleRate == 0 ? asbd.mSampleRate : self.sampleRate;
+        if ( fabs(_currentSampleRate - newSampleRate) > DBL_EPSILON ) {
+            hasChanges = hasOutputChanges = YES;
+            self.currentSampleRate = newSampleRate;
         }
         
         if ( _numberOfOutputChannels != (int)asbd.mChannelsPerFrame ) {
-            hasChanges = YES;
+            hasChanges = hasOutputChanges = YES;
             self.numberOfOutputChannels = asbd.mChannelsPerFrame;
         }
         
-        // Update the stream format
-        asbd = AEAudioDescription;
-        asbd.mChannelsPerFrame = self.numberOfOutputChannels;
-        asbd.mSampleRate = self.currentSampleRate;
-        AECheckOSStatus(AudioUnitSetProperty(_audioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0,
-                                             &asbd, sizeof(asbd)),
-                        "AudioUnitSetProperty(kAudioUnitProperty_StreamFormat)");
+        if ( hasOutputChanges || !self.hasSetInitialStreamFormat ) {
+            if ( running ) {
+                AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
+                stoppedUnit = YES;
+            }
+
+            // Update the stream format
+            asbd = AEAudioDescription;
+            asbd.mChannelsPerFrame = self.numberOfOutputChannels;
+            asbd.mSampleRate = self.currentSampleRate;
+            AECheckOSStatus(AudioUnitSetProperty(_audioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0,
+                                                 &asbd, sizeof(asbd)),
+                            "AudioUnitSetProperty(kAudioUnitProperty_StreamFormat)");
+        }
     }
     
     if ( self.inputEnabled ) {
@@ -657,17 +663,28 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
             asbd.mChannelsPerFrame = 2;
         }
         
+        BOOL hasInputChanges = NO;
+        
         int channels = self.maximumInputChannels ? MIN(asbd.mChannelsPerFrame, self.maximumInputChannels) : asbd.mChannelsPerFrame;
         if ( _numberOfInputChannels != (int)channels ) {
-            hasChanges = YES;
+            hasChanges = hasInputChanges = YES;
             self.numberOfInputChannels = channels;
         }
         
         if ( !self.outputEnabled ) {
-            self.currentSampleRate = self.sampleRate == 0 ? asbd.mSampleRate : self.sampleRate;
+            double newSampleRate = self.sampleRate == 0 ? asbd.mSampleRate : self.sampleRate;
+            if ( fabs(_currentSampleRate - newSampleRate) > DBL_EPSILON ) {
+                hasChanges = hasInputChanges = YES;
+                self.currentSampleRate = newSampleRate;
+            }
         }
         
-        if ( self.numberOfInputChannels > 0 ) {
+        if ( self.numberOfInputChannels > 0 && (hasInputChanges || self.hasSetInitialStreamFormat) ) {
+            if ( running && !stoppedUnit ) {
+                AECheckOSStatus(AudioOutputUnitStop(_audioUnit), "AudioOutputUnitStop");
+                stoppedUnit = YES;
+            }
+            
             // Set the stream format
             asbd = AEAudioDescription;
             asbd.mChannelsPerFrame = self.numberOfInputChannels;
@@ -683,6 +700,8 @@ static void AEIOAudioUnitIAAConnectionChanged(void *inRefCon, AudioUnit inUnit, 
     if ( hasChanges ) {
         [[NSNotificationCenter defaultCenter] postNotificationName:AEIOAudioUnitDidUpdateStreamFormatNotification object:self];
     }
+    
+    self.hasSetInitialStreamFormat = YES;
     
     if ( stoppedUnit ) {
         AECheckOSStatus(AudioOutputUnitStart(_audioUnit), "AudioOutputUnitStart");
