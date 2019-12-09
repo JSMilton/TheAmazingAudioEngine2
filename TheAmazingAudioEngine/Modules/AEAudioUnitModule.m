@@ -303,6 +303,11 @@ static OSStatus audioUnitRenderCallback(void                       *inRefCon,
     AECheckOSStatus(AudioComponentInstanceDispose(_audioUnit), "AudioComponentInstanceDispose");
 }
 
+- (void)reset
+{
+    AECheckOSStatus(AudioUnitReset(_audioUnit, kAudioUnitScope_Global, 0), "AudioUnitReset");
+}
+
 - (void)rendererDidChangeSampleRate {
     // Update the sample rate
     AECheckOSStatus(AudioUnitUninitialize(_audioUnit), "AudioUnitUninitialize");

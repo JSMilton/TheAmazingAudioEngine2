@@ -137,6 +137,8 @@ typedef BOOL (*AEModuleIsActiveFunc)(__unsafe_unretained AEModule * _Nonnull sel
  */
 @property (nonatomic, weak) AERenderer * _Nullable renderer;
 
+- (void)reset;
+
 @end
 
 #ifdef __cplusplus
