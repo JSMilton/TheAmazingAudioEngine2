@@ -112,6 +112,16 @@ typedef struct {
     [self updatePointerValue:value forObject:object];
 }
 
+- (id)objectForPointerValue:(void *)pointer {
+    array_t * array = (array_t*)_value.pointerValue;
+    for ( int i=0; i<array->count; i++ ) {
+        if ( array->entries[i]->pointer == pointer ) {
+            return array->objects[i];
+        }
+    }
+    return NULL;
+}
+
 - (void)updatePointerValue:(void *)value forObject:(id)object {
     array_t * array = (array_t*)_value.pointerValue;
     if ( !array->objects ) return;

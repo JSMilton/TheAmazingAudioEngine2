@@ -154,6 +154,16 @@ void AEDSPMix(const AudioBufferList * bufferList1, const AudioBufferList * buffe
 void AEDSPMixMono(const float * buffer1, const float * buffer2, float gain1, float gain2, UInt32 frames, float * output);
 
 /*!
+ * Crossfade from one buffer to another
+ *
+ * @param a First buffer list
+ * @param b Second buffer list
+ * @param target Target buffer list
+ * @param frames Number of frames to crossfade over
+ */
+void AEDSPCrossfade(const AudioBufferList * a, const AudioBufferList * b, const AudioBufferList * target, UInt32 frames);
+
+/*!
  * Silence an audio buffer list (zero out frames)
  *
  * @param bufferList Pointer to an AudioBufferList containing audio
@@ -201,6 +211,100 @@ static inline double AEDSPDecibelsToRatio(double decibels) {
 static inline double AEDSPRatioToDecibels(double ratio) {
     return 20.0 * log10(ratio);
 }
+
+/*!
+ * Structure for FFT convolution
+ */
+typedef struct AEDSPFFTConvolution_t AEDSPFFTConvolution;
+
+/*!
+ * FFT convolution operation
+ */
+typedef enum {
+    
+    //! Default convolution (returns only non-zero-padded elements a la Matlab "valid" and vDSP_conv behaviour)
+    AEDSPFFTConvolutionOperation_Convolution,
+    //! Full convolution
+    AEDSPFFTConvolutionOperation_ConvolutionFull,
+    //! Default correlation (returns only non-zero-padded elements a la Matlab "valid" and vDSP_conv behaviour)
+    AEDSPFFTConvolutionOperation_Correlation,
+    //! Full correlation
+    AEDSPFFTConvolutionOperation_CorrelationFull
+    
+} AEDSPFFTConvolutionOperation;
+
+/*!
+ * Initialize FFT convolution
+ *
+ *  Choose a length that is equal to the length of the filter, plus the processing block
+ *  size you would like to use (this utility will automatically break processing up into
+ *  blocks of this size if necessary). For example, for convolving a signal by a 4096-element
+ *  filter in blocks of 512 frames, you would select a length of 4096+512.
+ *
+ * @param length Block length (this utility will select an appropriate FFT size at least this length)
+ * @returns Allocated setup structure
+ */
+AEDSPFFTConvolution * AEDSPFFTConvolutionInit(int length);
+
+/*!
+ * Deallocate FFT convolution resources
+ *
+ * @param setup Setup structure
+ */
+void AEDSPFFTConvolutionDealloc(AEDSPFFTConvolution * setup);
+
+/*!
+ * Perform a single convolution
+ *
+ *  For one-off processing, use this method. For operation on continuous signals, use
+ *  AEDSPFFTConvolutionPrepareContinuous and AEDSPFFTConvolutionExecuteContinuous.
+ *
+ * @param setup Setup structure
+ * @param input Input signal
+ * @param inputLength Length of input signal
+ * @param filter Filter signal
+ * @param filterLength Length of filter signal (must be less than or equal to the setup length)
+ * @param output Output buffer (can be same as input, for in-place processing, must have length of inputLength)
+ * @param outputLength Length of output
+ * @param operation Operation to perform
+ */
+void AEDSPFFTConvolutionExecute(AEDSPFFTConvolution * setup, float * input, int inputLength, float * filter, int filterLength, float * output, int outputLength, AEDSPFFTConvolutionOperation operation);
+
+/*!
+ * Prepare for execution on continuous signals
+ *
+ *  This utility allows you to prepare for convolving the given filter with a continuous input
+ *  signal, via AEDSPFFTConvolutionExecuteContinuous.
+ *
+ *  You may call this function during use to update the filter without affecting continuous operation.
+ *
+ * @param setup Setup structure
+ * @param filter Filter signal
+ * @param filterLength Length of filter signal (must be less than or equal to the setup length)
+ * @param operation Operation to perform
+ */
+void AEDSPFFTConvolutionPrepareContinuous(AEDSPFFTConvolution * setup, float * filter, int filterLength, AEDSPFFTConvolutionOperation operation);
+
+/*!
+ * Process a continuous signal
+ *
+ *  Use AEDSPFFTConvolutionPrepareContinuous to setup this utility, then call this method
+ *  to process input buffers.
+ *
+ * @param setup Setup structure
+ * @param input Input signal
+ * @param inputLength Length of input signal
+ * @param output Output buffer (can be same as input, for in-place processing, must have length of inputLength)
+ * @param outputLength Length of output
+ */
+void AEDSPFFTConvolutionExecuteContinuous(AEDSPFFTConvolution * setup, float * input, int inputLength, float * output, int outputLength);
+
+/*!
+ * Reset internal buffers before processing a new continuous signal
+ *
+ * @param setup Setup structure
+ */
+void AEDSPFFTConvolutionReset(AEDSPFFTConvolution * setup);
 
 #ifdef __cplusplus
 }
